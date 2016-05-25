@@ -19,13 +19,16 @@ app.use(express.static('public'));
 // body parser config to accept our datatypes
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//import modules
+var db = require('./models');
+
 
 
 ////////////////////
 //  DATA
 ///////////////////
 
-var books = [
+/*var books = [
   {
     _id: 15,
     title: "The Four Hour Workweek",
@@ -48,9 +51,7 @@ var books = [
     release_date: "Unknown 1597"
   }
 ];
-
-
-
+*/
 
 
 
@@ -67,12 +68,27 @@ app.get('/', function (req, res) {
   res.sendFile('views/index.html' , { root : __dirname});
 });
 
+
+/*
 // get all books
 app.get('/api/books', function (req, res) {
   // send all books as JSON response
   console.log('books index');
   res.json(books);
 });
+*/
+
+//find books index route and replaced with this:
+app.get('/api/books', function (req, res) {
+  // send all books as JSON response
+  db.Book.find(function(err, books){
+    if (err) { return console.log("index error: " + err); }
+    res.json(books);
+  });
+});
+
+
+
 
 // get one book
 app.get('/api/books/:id', function (req, res) {
@@ -86,6 +102,16 @@ app.get('/api/books/:id', function (req, res) {
   }
 });
 
+
+//get one book in mongoose
+app.get('/api/books', function (req, res) {
+  //send one book as JSON response
+  db.Book.findOne(function (err, books) {
+    if (err) { return console.log("index error: " + err);}
+    res.json(book);
+  });
+});
+
 // create new book
 app.post('/api/books', function (req, res) {
   // create new book with form data (`req.body`)
@@ -94,6 +120,15 @@ app.post('/api/books', function (req, res) {
   books.push(newBook);
   res.json(newBook);
 });
+
+//create new book in mongoose
+app.post('/api/books', function (req, res) {
+  db.Book.new(function (err, books) {
+    if (err) {return console.log("index error: " + err);}
+    //push new book into database?
+    //check yesterday's docs
+  })
+})
 
 // update book
 // app.put('/api/books/:id', controllers.books.update);
